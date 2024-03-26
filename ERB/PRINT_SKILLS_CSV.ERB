@@ -1,0 +1,70 @@
+﻿;@EVENTLOAD
+;#LATER
+;CALL PRINT_SKILLS_CSV
+;CALL PRINT_SKILLS_CSV_2
+
+@PRINT_SKILLS_CSV
+#DIM C_ID
+#DIM ステータスタイプカウンタ
+#DIM 属性カウンタ
+#DIM 表示アビ数
+#DIM アビ番号
+#DIMS アビ関数名, 4
+
+表示アビ数 = ENUMFUNCBEGINSWITH("汎用固有アビ_")
+ARRAYCOPY "RESULTS", "アビ関数名"
+FOR C_ID, 0, CHARANUM
+	IF NO:C_ID == 999
+		基礎BATTLE_STATE:C_ID:Lv = 32
+		PRINT ステータスタイプ,属性,
+		FOR アビ番号, 0, 表示アビ数
+			PRINTFORM アビ{アビ番号+1},
+		NEXT
+		PRINTL 
+		FOR ステータスタイプカウンタ, 0, 8
+			基礎BATTLE_STATE:C_ID:ステータスタイプ保存 = ステータスタイプカウンタ
+			FOR 属性カウンタ, 0, 6
+				基礎BATTLE_STATE:C_ID:属性 = 属性カウンタ
+				PRINTFORM %タイプ数値文字列変換(ステータスタイプカウンタ)%,%属性数値文字列変換(属性カウンタ)%,
+				FOR アビ番号, 0, 表示アビ数
+					TSTR:コマンド名受渡 '= ""
+					CALLFORM %アビ関数名:アビ番号%("アビ名", C_ID)
+					PRINTFORM %REPLACE(TSTR:コマンド名受渡, "＋", "")%,
+				NEXT
+				PRINTL 
+			NEXT
+		NEXT
+		BREAK
+	ENDIF
+NEXT
+PRINTL 
+
+@PRINT_SKILLS_CSV_2
+#DIM C_ID
+#DIM ステータスタイプカウンタ
+#DIM 属性カウンタ
+#DIM 表示アビ数
+#DIM アビ番号
+#DIMS アビ関数名, 4
+
+表示アビ数 = ENUMFUNCBEGINSWITH("汎用固有アビ_")
+ARRAYCOPY "RESULTS", "アビ関数名"
+FOR C_ID, 0, CHARANUM
+	IF NO:C_ID == 999
+		基礎BATTLE_STATE:C_ID:Lv = 32
+		PRINTL ステータスタイプ,属性,アビ枠,アビ名
+		FOR ステータスタイプカウンタ, 0, 8
+			基礎BATTLE_STATE:C_ID:ステータスタイプ保存 = ステータスタイプカウンタ
+			FOR 属性カウンタ, 0, 6
+				基礎BATTLE_STATE:C_ID:属性 = 属性カウンタ
+				FOR アビ番号, 0, 表示アビ数
+					TSTR:コマンド名受渡 '= ""
+					CALLFORM %アビ関数名:アビ番号%("アビ名", C_ID)
+					PRINTFORML %タイプ数値文字列変換(ステータスタイプカウンタ)%,%属性数値文字列変換(属性カウンタ)%,{アビ番号+1},%REPLACE(TSTR:コマンド名受渡, "＋", "")%
+				NEXT
+			NEXT
+		NEXT
+		BREAK
+	ENDIF
+NEXT
+PRINTL 
